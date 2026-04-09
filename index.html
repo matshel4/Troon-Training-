@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BevSpot Knowledge Base</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0C0F14;
+    --surface: #151921;
+    --surface-raised: #1C2230;
+    --border: #2A3040;
+    --text: #E8ECF4;
+    --text-muted: #8B95A8;
+    --accent: #F59E0B;
+    --accent-glow: rgba(245, 158, 11, 0.15);
+    --accent-subtle: #B07708;
+    --green: #34D399;
+    --red: #F87171;
+    --radius: 12px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .container {
+    max-width: 840px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── Header ── */
+  header {
+    padding: 60px 0 40px;
+    text-align: center;
+    position: relative;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--bg);
+    font-family: 'Fraunces', serif;
+  }
+
+  .logo-text {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, var(--text), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p {
+    color: var(--text-muted);
+    font-size: 16px;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ── Search Area ── */
+  .search-section {
+    padding: 40px 0 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+  }
+
+  .search-section::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(var(--bg), transparent);
+    pointer-events: none;
+  }
+
+  .search-box {
+    position: relative;
+  }
+
+  .search-box textarea {
+    width: 100%;
+    padding: 18px 60px 18px 22px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    resize: none;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    overflow: hidden;
+    min-height: 58px;
+    max-height: 160px;
+  }
+
+  .search-box textarea::placeholder { color: var(--text-muted); }
+
+  .search-box textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-glow);
+  }
+
+  .search-btn {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: var(--bg);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, opacity 0.15s;
+  }
+
+  .search-btn:hover { transform: scale(1.06); }
+  .search-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .search-btn svg { width: 20px; height: 20px; }
+
+  /* ── Quick questions ── */
+  .quick-questions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px 0 0;
+    justify-content: center;
+  }
+
+  .quick-q {
+    padding: 8px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    color: var(--text-muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .quick-q:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-glow);
+  }
+
+  /* ── Answer Area ── */
+  .answer-section {
+    padding: 20px 0 80px;
+    min-height: 200px;
+  }
+
+  .answer-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    animation: slideUp 0.35s ease;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .answer-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+
+  .answer-header .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .answer-body {
+    padding: 24px;
+    line-height: 1.75;
+    font-size: 15px;
+  }
+
+  .answer-body h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 24px 0 10px;
+    color: var(--accent);
+  }
+
+  .answer-body h3:first-child { margin-top: 0; }
+
+  .answer-body p { margin-bottom: 12px; }
+
+  .answer-body ol, .answer-body ul {
+    padding-left: 20px;
+    margin-bottom: 12px;
+  }
+
+  .answer-body li { margin-bottom: 6px; }
+
+  .answer-body strong { color: var(--accent); font-weight: 600; }
+
+  .answer-body code {
+    background: var(--surface-raised);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 13px;
+    color: var(--green);
+  }
+
+  .answer-body em { color: var(--text-muted); font-style: italic; }
+
+  .source-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 16px;
+    margin-right: 6px;
+  }
+
+  /* ── Loading ── */
+  .loading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 24px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .loading-dots {
+    display: flex;
+    gap: 5px;
+  }
+
+  .loading-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.2s infinite;
+  }
+
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes pulse {
+    0%, 80%, 100% { opacity: 0.25; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── Topics Grid ── */
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    padding: 30px 0;
+  }
+
+  .topic-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+
+  .topic-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  .topic-card .topic-icon { font-size: 24px; margin-bottom: 10px; }
+
+  .topic-card h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .topic-card p {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 20px 0 40px;
+    color: var(--text-muted);
+    font-size: 12px;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 40px 0 30px; }
+    .search-section { padding: 24px 0 12px; }
+    .topics-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo-mark">
+      <div class="logo-icon">B</div>
+      <span class="logo-text">BevSpot Guides</span>
+    </div>
+    <h1>What do you need help with?</h1>
+    <p>Ask any question about inventory auditing, COGS, sales variance, or profit analysis in BevSpot.</p>
+  </header>
+
+  <div class="search-section">
+    <div class="search-box">
+      <textarea id="questionInput" rows="1" placeholder="e.g. How do I fix a $0 cost item in my inventory?"></textarea>
+      <button class="search-btn" id="askBtn" onclick="askQuestion()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
+    <div class="quick-questions" id="quickQuestions">
+      <button class="quick-q" onclick="fillQuestion(this)">How do I fix $0 cost items?</button>
+      <button class="quick-q" onclick="fillQuestion(this)">What causes high usage errors?</button>
+      <button class="quick-q" onclick="fillQuestion(this)">How do I map sales items?</button>
+      <button class="quick-q" onclick="fillQuestion(this)">What does a red flag mean?</button>
+      <button class="quick-q" onclick="fillQuestion(this)">How do I run a sales variance report?</button>
+    </div>
+  </div>
+
+  <div class="answer-section" id="answerSection">
+    <div class="topics-grid" id="topicsGrid">
+      <div class="topic-card" onclick="fillQuestion(this)" data-q="How do I identify and fix non-categorized items?">
+        <div class="topic-icon">🏷️</div>
+        <h3>Item Categorization</h3>
+        <p>Fix miscategorized items so your category totals are accurate.</p>
+      </div>
+      <div class="topic-card" onclick="fillQuestion(this)" data-q="How do I find and correct $0 cost items in inventory?">
+        <div class="topic-icon">💲</div>
+        <h3>$0 Cost Items</h3>
+        <p>Find items with missing costs that deflate your inventory value.</p>
+      </div>
+      <div class="topic-card" onclick="fillQuestion(this)" data-q="How do I identify erroneous high usage in BevSpot?">
+        <div class="topic-icon">📊</div>
+        <h3>Usage Errors</h3>
+        <p>Spot miscounts and delivery errors that distort usage data.</p>
+      </div>
+      <div class="topic-card" onclick="fillQuestion(this)" data-q="How do I use the COGS report and fix flagged items?">
+        <div class="topic-icon">📋</div>
+        <h3>COGS Report</h3>
+        <p>Review cost of goods sold and resolve flagged item discrepancies.</p>
+      </div>
+      <div class="topic-card" onclick="fillQuestion(this)" data-q="How do I run and analyze a sales variance report?">
+        <div class="topic-icon">📈</div>
+        <h3>Sales Variance</h3>
+        <p>Run reports, map POS items, and investigate variance thresholds.</p>
+      </div>
+      <div class="topic-card" onclick="fillQuestion(this)" data-q="How do I use the profit report to improve menu performance?">
+        <div class="topic-icon">💰</div>
+        <h3>Profit Analysis</h3>
+        <p>Identify top performers and optimize your menu for profitability.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>Powered by BevSpot knowledge base guides</footer>
+</div>
+
+<script>
+const textarea = document.getElementById('questionInput');
+const askBtn = document.getElementById('askBtn');
+
+textarea.addEventListener('input', () => {
+  textarea.style.height = 'auto';
+  textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
+});
+
+textarea.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    askQuestion();
+  }
+});
+
+function fillQuestion(el) {
+  const q = el.dataset?.q || el.textContent;
+  textarea.value = q;
+  textarea.style.height = 'auto';
+  textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
+  askQuestion();
+}
+
+async function askQuestion() {
+  const question = textarea.value.trim();
+  if (!question) return;
+
+  askBtn.disabled = true;
+  const section = document.getElementById('answerSection');
+  const grid = document.getElementById('topicsGrid');
+  if (grid) grid.style.display = 'none';
+
+  section.innerHTML = `
+    <div class="answer-card">
+      <div class="answer-header"><span class="dot"></span> Finding your answer</div>
+      <div class="loading">
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+        Searching the BevSpot guides...
+      </div>
+    </div>
+  `;
+
+  try {
+    const response = await fetch('/.netlify/functions/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question })
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
+    const answer = data.answer;
+
+    // Determine source tags
+    const sources = [];
+    const lower = answer.toLowerCase();
+    if (lower.includes('inventory') || lower.includes('cogs') || lower.includes('usage') || lower.includes('flag') || lower.includes('categoriz'))
+      sources.push('Inventory & COGS Auditing Guide');
+    if (lower.includes('variance') || lower.includes('mapping') || lower.includes('profit') || lower.includes('pos') || lower.includes('sales'))
+      sources.push('Sales Variance Analysis Guide');
+
+    const sourceTags = sources.map(s => `<span class="source-tag">📄 ${s}</span>`).join(' ');
+
+    section.innerHTML = `
+      <div class="answer-card">
+        <div class="answer-header"><span class="dot"></span> Answer</div>
+        <div class="answer-body">
+          ${answer}
+          ${sourceTags ? '<div style="margin-top:18px">' + sourceTags + '</div>' : ''}
+        </div>
+      </div>
+    `;
+
+  } catch (err) {
+    section.innerHTML = `
+      <div class="answer-card">
+        <div class="answer-header"><span class="dot" style="background:var(--red)"></span> Error</div>
+        <div class="answer-body">
+          <p>Sorry, something went wrong while fetching your answer. Please try again.</p>
+          <p><em>${err.message}</em></p>
+        </div>
+      </div>
+    `;
+  }
+
+  askBtn.disabled = false;
+}
+</script>
+</body>
+</html>
