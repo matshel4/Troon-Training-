@@ -3,403 +3,109 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BevSpot Knowledge Base</title>
+<title>Troon Golf × BevSpot — Training Center</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #0C0F14;
-    --surface: #151921;
-    --surface-raised: #1C2230;
-    --border: #2A3040;
-    --text: #E8ECF4;
-    --text-muted: #8B95A8;
-    --accent: #F59E0B;
-    --accent-glow: rgba(245, 158, 11, 0.15);
-    --accent-subtle: #B07708;
-    --green: #34D399;
-    --red: #F87171;
+    --bg: #F4F6F9;
+    --surface: #FFFFFF;
+    --surface-raised: #EEF1F6;
+    --border: #D8DDE6;
+    --text: #1A2332;
+    --text-muted: #5F6D7E;
+    --bevspot-blue: #2B6CB0;
+    --bevspot-blue-light: #3B82C4;
+    --bevspot-blue-glow: rgba(43, 108, 176, 0.1);
+    --troon-green: #2D5A27;
+    --green: #16A34A;
+    --red: #DC2626;
     --radius: 12px;
   }
-
   html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+  .container { max-width: 840px; margin: 0 auto; padding: 0 24px; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  header { padding: 40px 0 36px; text-align: center; background: linear-gradient(180deg, #FFFFFF 0%, var(--bg) 100%); }
+  .logos { display: flex; align-items: center; justify-content: center; gap: 24px; margin-bottom: 28px; flex-wrap: wrap; }
+  .logo-bevspot img { height: 34px; display: block; }
+  .logo-divider { width: 1px; height: 36px; background: var(--border); }
+  .logo-troon img { height: 44px; display: block; }
+  .header-badge { display: inline-block; padding: 5px 14px; background: var(--troon-green); color: #fff; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 100px; margin-bottom: 18px; }
+  h1 { font-family: 'Fraunces', serif; font-size: clamp(26px, 5vw, 40px); font-weight: 800; line-height: 1.2; margin-bottom: 12px; color: var(--text); }
+  header .container > p { color: var(--text-muted); font-size: 15px; max-width: 500px; margin: 0 auto; line-height: 1.6; }
 
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    pointer-events: none;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-
-  .container {
-    max-width: 840px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-
-  /* ── Header ── */
-  header {
-    padding: 60px 0 40px;
-    text-align: center;
-    position: relative;
-  }
-
-  header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 3px;
-    background: var(--accent);
-    border-radius: 2px;
-  }
-
-  .logo-mark {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .logo-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--accent);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--bg);
-    font-family: 'Fraunces', serif;
-  }
-
-  .logo-text {
-    font-family: 'Fraunces', serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text-muted);
-    letter-spacing: 0.5px;
-  }
-
-  h1 {
-    font-family: 'Fraunces', serif;
-    font-size: clamp(28px, 5vw, 44px);
-    font-weight: 800;
-    line-height: 1.15;
-    margin-bottom: 14px;
-    background: linear-gradient(135deg, var(--text), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  header p {
-    color: var(--text-muted);
-    font-size: 16px;
-    max-width: 480px;
-    margin: 0 auto;
-    line-height: 1.6;
-  }
-
-  /* ── Search Area ── */
-  .search-section {
-    padding: 40px 0 20px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: var(--bg);
-  }
-
-  .search-section::after {
-    content: '';
-    position: absolute;
-    bottom: -20px;
-    left: 0;
-    right: 0;
-    height: 20px;
-    background: linear-gradient(var(--bg), transparent);
-    pointer-events: none;
-  }
-
-  .search-box {
-    position: relative;
-  }
-
-  .search-box textarea {
-    width: 100%;
-    padding: 18px 60px 18px 22px;
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-    resize: none;
-    outline: none;
-    transition: border-color 0.25s, box-shadow 0.25s;
-    overflow: hidden;
-    min-height: 58px;
-    max-height: 160px;
-  }
-
+  .search-section { padding: 24px 0 16px; position: sticky; top: 0; z-index: 100; background: var(--bg); }
+  .search-section::after { content: ''; position: absolute; bottom: -16px; left: 0; right: 0; height: 16px; background: linear-gradient(var(--bg), transparent); pointer-events: none; }
+  .search-box { position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border-radius: var(--radius); }
+  .search-box textarea { width: 100%; padding: 18px 60px 18px 22px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px; line-height: 1.5; resize: none; outline: none; transition: border-color 0.25s, box-shadow 0.25s; overflow: hidden; min-height: 58px; max-height: 160px; }
   .search-box textarea::placeholder { color: var(--text-muted); }
-
-  .search-box textarea:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 4px var(--accent-glow);
-  }
-
-  .search-btn {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 10px;
-    background: var(--accent);
-    color: var(--bg);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.15s, opacity 0.15s;
-  }
-
-  .search-btn:hover { transform: scale(1.06); }
+  .search-box textarea:focus { border-color: var(--bevspot-blue); box-shadow: 0 0 0 4px var(--bevspot-blue-glow), 0 4px 20px rgba(0,0,0,0.06); }
+  .search-btn { position: absolute; right: 10px; bottom: 10px; width: 40px; height: 40px; border: none; border-radius: 10px; background: var(--bevspot-blue); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.15s, background 0.15s; }
+  .search-btn:hover { transform: scale(1.06); background: var(--bevspot-blue-light); }
   .search-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
   .search-btn svg { width: 20px; height: 20px; }
 
-  /* ── Quick questions ── */
-  .quick-questions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 16px 0 0;
-    justify-content: center;
-  }
+  .quick-questions { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 0; justify-content: center; }
+  .quick-q { padding: 7px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; color: var(--text-muted); font-size: 13px; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+  .quick-q:hover { border-color: var(--bevspot-blue); color: var(--bevspot-blue); background: var(--bevspot-blue-glow); }
 
-  .quick-q {
-    padding: 8px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    color: var(--text-muted);
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .quick-q:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: var(--accent-glow);
-  }
-
-  /* ── Answer Area ── */
-  .answer-section {
-    padding: 20px 0 80px;
-    min-height: 200px;
-  }
-
-  .answer-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    animation: slideUp 0.35s ease;
-  }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .answer-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 18px 22px;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 600;
-  }
-
-  .answer-header .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-  }
-
-  .answer-body {
-    padding: 24px;
-    line-height: 1.75;
-    font-size: 15px;
-  }
-
-  .answer-body h3 {
-    font-family: 'Fraunces', serif;
-    font-size: 18px;
-    font-weight: 700;
-    margin: 24px 0 10px;
-    color: var(--accent);
-  }
-
+  .answer-section { padding: 20px 0 80px; min-height: 200px; }
+  .answer-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; animation: slideUp 0.35s ease; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .answer-header { display: flex; align-items: center; gap: 10px; padding: 16px 22px; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; background: var(--surface-raised); }
+  .answer-header .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bevspot-blue); }
+  .answer-body { padding: 24px; line-height: 1.75; font-size: 15px; }
+  .answer-body h3 { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 700; margin: 22px 0 8px; color: var(--troon-green); }
   .answer-body h3:first-child { margin-top: 0; }
-
   .answer-body p { margin-bottom: 12px; }
-
-  .answer-body ol, .answer-body ul {
-    padding-left: 20px;
-    margin-bottom: 12px;
-  }
-
+  .answer-body ol, .answer-body ul { padding-left: 20px; margin-bottom: 12px; }
   .answer-body li { margin-bottom: 6px; }
-
-  .answer-body strong { color: var(--accent); font-weight: 600; }
-
-  .answer-body code {
-    background: var(--surface-raised);
-    padding: 2px 7px;
-    border-radius: 5px;
-    font-size: 13px;
-    color: var(--green);
-  }
-
+  .answer-body strong { color: var(--bevspot-blue); font-weight: 600; }
+  .answer-body code { background: var(--surface-raised); padding: 2px 7px; border-radius: 5px; font-size: 13px; color: var(--troon-green); }
   .answer-body em { color: var(--text-muted); font-style: italic; }
+  .source-tag { display: inline-block; padding: 4px 12px; background: var(--surface-raised); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; color: var(--text-muted); margin-top: 16px; margin-right: 6px; }
 
-  .source-tag {
-    display: inline-block;
-    padding: 4px 12px;
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 16px;
-    margin-right: 6px;
-  }
-
-  /* ── Loading ── */
-  .loading {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 24px;
-    color: var(--text-muted);
-    font-size: 14px;
-  }
-
-  .loading-dots {
-    display: flex;
-    gap: 5px;
-  }
-
-  .loading-dots span {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: pulse 1.2s infinite;
-  }
-
+  .loading { display: flex; align-items: center; gap: 12px; padding: 24px; color: var(--text-muted); font-size: 14px; }
+  .loading-dots { display: flex; gap: 5px; }
+  .loading-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--bevspot-blue); animation: pulse 1.2s infinite; }
   .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
   .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%, 80%, 100% { opacity: 0.25; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1); } }
 
-  @keyframes pulse {
-    0%, 80%, 100% { opacity: 0.25; transform: scale(0.8); }
-    40% { opacity: 1; transform: scale(1); }
-  }
-
-  /* ── Topics Grid ── */
-  .topics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 12px;
-    padding: 30px 0;
-  }
-
-  .topic-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    cursor: pointer;
-    transition: all 0.25s;
-  }
-
-  .topic-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  }
-
+  .topics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; padding: 24px 0; }
+  .topic-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; cursor: pointer; transition: all 0.25s; box-shadow: 0 1px 4px rgba(0,0,0,0.03); }
+  .topic-card:hover { border-color: var(--bevspot-blue); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
   .topic-card .topic-icon { font-size: 24px; margin-bottom: 10px; }
+  .topic-card h3 { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+  .topic-card p { color: var(--text-muted); font-size: 13px; line-height: 1.5; }
 
-  .topic-card h3 {
-    font-family: 'Fraunces', serif;
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-
-  .topic-card p {
-    color: var(--text-muted);
-    font-size: 13px;
-    line-height: 1.5;
-  }
-
-  /* ── Footer ── */
-  footer {
-    text-align: center;
-    padding: 20px 0 40px;
-    color: var(--text-muted);
-    font-size: 12px;
-    opacity: 0.5;
-  }
+  footer { text-align: center; padding: 20px 0 40px; color: var(--text-muted); font-size: 12px; }
+  footer span { color: var(--troon-green); font-weight: 600; }
 
   @media (max-width: 600px) {
-    header { padding: 40px 0 30px; }
-    .search-section { padding: 24px 0 12px; }
+    header { padding: 30px 0 24px; }
+    .search-section { padding: 16px 0 10px; }
     .topics-grid { grid-template-columns: 1fr; }
+    .logos { gap: 16px; }
   }
 </style>
 </head>
 <body>
+<header>
+  <div class="container">
+    <div class="logos">
+      <div class="logo-bevspot"><img src="https://bevspot.com/wp-content/uploads/2020/03/Logo.png" alt="BevSpot Logo"></div>
+      <div class="logo-divider"></div>
+      <div class="logo-troon"><img src="https://www.troon.com/wp-content/uploads/2023/08/Troon-Full-Color.png" alt="Troon Golf Logo" onerror="this.onerror=null;this.style.display='none';this.parentElement.innerHTML='<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 200 56&quot; width=&quot;120&quot; height=&quot;34&quot;><rect x=&quot;4&quot; y=&quot;4&quot; width=&quot;192&quot; height=&quot;48&quot; rx=&quot;6&quot; fill=&quot;none&quot; stroke=&quot;%232D5A27&quot; stroke-width=&quot;4&quot;/><text x=&quot;100&quot; y=&quot;37&quot; font-family=&quot;serif&quot; font-size=&quot;28&quot; font-weight=&quot;bold&quot; fill=&quot;%232D5A27&quot; text-anchor=&quot;middle&quot;>TROON</text></svg>';"></div>
+    </div>
+    <div class="header-badge">Training Center</div>
+    <h1>What do you need help with?</h1>
+    <p>Your guide to mastering BevSpot — ask any question about inventory, COGS, sales variance, or profit analysis.</p>
+  </div>
+</header>
 
 <div class="container">
-  <header>
-    <div class="logo-mark">
-      <div class="logo-icon">B</div>
-      <span class="logo-text">BevSpot Guides</span>
-    </div>
-    <h1>What do you need help with?</h1>
-    <p>Ask any question about inventory auditing, COGS, sales variance, or profit analysis in BevSpot.</p>
-  </header>
-
   <div class="search-section">
     <div class="search-box">
       <textarea id="questionInput" rows="1" placeholder="e.g. How do I fix a $0 cost item in my inventory?"></textarea>
@@ -407,7 +113,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
     </div>
-    <div class="quick-questions" id="quickQuestions">
+    <div class="quick-questions">
       <button class="quick-q" onclick="fillQuestion(this)">How do I fix $0 cost items?</button>
       <button class="quick-q" onclick="fillQuestion(this)">What causes high usage errors?</button>
       <button class="quick-q" onclick="fillQuestion(this)">How do I map sales items?</button>
@@ -451,7 +157,7 @@
     </div>
   </div>
 
-  <footer>Powered by BevSpot knowledge base guides</footer>
+  <footer>An educational resource for <span>Troon Golf</span> — powered by BevSpot</footer>
 </div>
 
 <script>
@@ -464,10 +170,7 @@ textarea.addEventListener('input', () => {
 });
 
 textarea.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    askQuestion();
-  }
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); askQuestion(); }
 });
 
 function fillQuestion(el) {
@@ -487,15 +190,7 @@ async function askQuestion() {
   const grid = document.getElementById('topicsGrid');
   if (grid) grid.style.display = 'none';
 
-  section.innerHTML = `
-    <div class="answer-card">
-      <div class="answer-header"><span class="dot"></span> Finding your answer</div>
-      <div class="loading">
-        <div class="loading-dots"><span></span><span></span><span></span></div>
-        Searching the BevSpot guides...
-      </div>
-    </div>
-  `;
+  section.innerHTML = '<div class="answer-card"><div class="answer-header"><span class="dot"></span> Finding your answer</div><div class="loading"><div class="loading-dots"><span></span><span></span><span></span></div>Searching the BevSpot guides...</div></div>';
 
   try {
     const response = await fetch('/.netlify/functions/ask', {
@@ -503,47 +198,20 @@ async function askQuestion() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question })
     });
-
     const data = await response.json();
-
-    if (data.error) {
-      throw new Error(data.error);
-    }
+    if (data.error) throw new Error(data.error);
 
     const answer = data.answer;
-
-    // Determine source tags
     const sources = [];
     const lower = answer.toLowerCase();
-    if (lower.includes('inventory') || lower.includes('cogs') || lower.includes('usage') || lower.includes('flag') || lower.includes('categoriz'))
-      sources.push('Inventory & COGS Auditing Guide');
-    if (lower.includes('variance') || lower.includes('mapping') || lower.includes('profit') || lower.includes('pos') || lower.includes('sales'))
-      sources.push('Sales Variance Analysis Guide');
+    if (lower.includes('inventory') || lower.includes('cogs') || lower.includes('usage') || lower.includes('flag') || lower.includes('categoriz')) sources.push('Inventory & COGS Auditing Guide');
+    if (lower.includes('variance') || lower.includes('mapping') || lower.includes('profit') || lower.includes('pos') || lower.includes('sales')) sources.push('Sales Variance Analysis Guide');
+    const sourceTags = sources.map(s => '<span class="source-tag">📄 ' + s + '</span>').join(' ');
 
-    const sourceTags = sources.map(s => `<span class="source-tag">📄 ${s}</span>`).join(' ');
-
-    section.innerHTML = `
-      <div class="answer-card">
-        <div class="answer-header"><span class="dot"></span> Answer</div>
-        <div class="answer-body">
-          ${answer}
-          ${sourceTags ? '<div style="margin-top:18px">' + sourceTags + '</div>' : ''}
-        </div>
-      </div>
-    `;
-
+    section.innerHTML = '<div class="answer-card"><div class="answer-header"><span class="dot"></span> Answer</div><div class="answer-body">' + answer + (sourceTags ? '<div style="margin-top:18px">' + sourceTags + '</div>' : '') + '</div></div>';
   } catch (err) {
-    section.innerHTML = `
-      <div class="answer-card">
-        <div class="answer-header"><span class="dot" style="background:var(--red)"></span> Error</div>
-        <div class="answer-body">
-          <p>Sorry, something went wrong while fetching your answer. Please try again.</p>
-          <p><em>${err.message}</em></p>
-        </div>
-      </div>
-    `;
+    section.innerHTML = '<div class="answer-card"><div class="answer-header"><span class="dot" style="background:var(--red)"></span> Error</div><div class="answer-body"><p>Sorry, something went wrong while fetching your answer. Please try again.</p><p><em>' + err.message + '</em></p></div></div>';
   }
-
   askBtn.disabled = false;
 }
 </script>
