@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BevSpot — Customer Q&A Knowledge Base</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0f0e0b;
+      --cream: #f7f4ee;
+      --accent: #c9472b;
+      --accent-light: #f5e9e6;
+      --muted: #7a7264;
+      --border: #ddd9d0;
+      --card: #ffffff;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--cream); color: var(--ink); font-family: 'DM Sans', sans-serif; font-weight: 300; line-height: 1.7; }
+
+    header { background: var(--ink); color: var(--cream); padding: 64px 40px 52px; position: relative; overflow: hidden; }
+    header::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(255,255,255,.018) 40px, rgba(255,255,255,.018) 41px); pointer-events: none; }
+    .hdr { max-width: 960px; margin: 0 auto; position: relative; }
+    .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    h1 { font-family: 'Playfair Display', serif; font-size: clamp(34px,6vw,70px); font-weight: 900; line-height: 1.04; letter-spacing: -.02em; margin-bottom: 18px; }
+    .subtitle { font-size: 15px; color: rgba(247,244,238,.58); max-width: 520px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 32px; margin-top: 40px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,.1); font-size: 13px; color: rgba(247,244,238,.45); }
+    .meta strong { display: block; font-size: 24px; font-family: 'Playfair Display', serif; color: var(--cream); line-height: 1.1; }
+
+    .toc { background: var(--accent); overflow-x: auto; padding: 0 40px; }
+    .toc-inner { max-width: 960px; margin: 0 auto; display: flex; }
+    .toc a { display: block; padding: 13px 16px; color: rgba(255,255,255,.78); font-size: 11.5px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; text-decoration: none; white-space: nowrap; border-bottom: 2px solid transparent; transition: color .18s, border-color .18s; }
+    .toc a:hover { color: #fff; border-bottom-color: #fff; }
+
+    main { max-width: 960px; margin: 0 auto; padding: 56px 40px 100px; }
+
+    .search-wrap { margin-bottom: 48px; position: relative; }
+    .search-wrap svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); width: 18px; height: 18px; }
+    .search-wrap input { width: 100%; padding: 14px 20px 14px 48px; font-family: 'DM Sans', sans-serif; font-size: 15px; border: 1px solid var(--border); border-radius: 2px; background: #fff; color: var(--ink); outline: none; transition: border-color .2s; }
+    .search-wrap input:focus { border-color: var(--accent); }
+
+    .section-label { display: flex; align-items: center; gap: 14px; margin: 64px 0 28px; }
+    .section-label:first-of-type { margin-top: 0; }
+    .section-label span { font-size: 11px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .qa { background: var(--card); border: 1px solid var(--border); border-radius: 2px; margin-bottom: 18px; overflow: hidden; }
+    .qa.hidden { display: none; }
+    .qa-head { display: flex; align-items: flex-start; gap: 14px; padding: 22px 26px 18px; cursor: pointer; user-select: none; }
+    .q-badge { flex-shrink: 0; width: 26px; height: 26px; background: var(--accent-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 12px; color: var(--accent); margin-top: 2px; }
+    .q-text { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; line-height: 1.35; flex: 1; }
+    .chevron { flex-shrink: 0; width: 18px; height: 18px; color: var(--muted); transition: transform .25s; margin-top: 4px; }
+    .qa.open .chevron { transform: rotate(180deg); }
+    .qa-body { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+    .qa.open .qa-body { max-height: 1200px; }
+    .ans { padding: 0 26px 26px 66px; font-size: 14.5px; color: #38352e; line-height: 1.78; }
+    .ans p + p { margin-top: 10px; }
+    .ans ul { margin: 8px 0 8px 18px; }
+    .ans ul li { margin-bottom: 5px; }
+    .tip { margin-top: 14px; background: var(--accent-light); border-left: 3px solid var(--accent); padding: 11px 15px; border-radius: 0 2px 2px 0; font-size: 13px; color: #7a2e1a; }
+    .tip strong { font-weight: 500; }
+    .src { display: inline-flex; align-items: center; gap: 5px; margin-top: 14px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+    .src::before { content: ''; display: inline-block; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; }
+
+    footer { background: var(--ink); color: rgba(247,244,238,.38); text-align: center; padding: 30px 24px; font-size: 13px; }
+    footer strong { color: var(--cream); }
+
+    @media (max-width: 600px) {
+      main, header { padding-left: 20px; padding-right: 20px; }
+      .toc { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="hdr">
+    <p class="eyebrow">BevSpot Customer Success · Sam Wilson</p>
+    <h1>Customer Q&amp;A<br>Knowledge Base</h1>
+    <p class="subtitle">Real questions from hotel and restaurant customers, answered directly — compiled from email threads spanning January 2025 through April 2026.</p>
+    <div class="meta">
+      <div><strong>20</strong> Questions &amp; answers</div>
+      <div><strong>6</strong> Topic areas</div>
+      <div><strong>15+</strong> Months of data</div>
+      <div><strong>Apr 2026</strong> Last updated</div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="toc-inner">
+    <a href="#inventory">Inventory</a>
+    <a href="#invoicing">Invoicing</a>
+    <a href="#ordering">Ordering</a>
+    <a href="#onboarding">Onboarding</a>
+    <a href="#reporting">Reporting</a>
+    <a href="#access">Access &amp; Users</a>
+  </div>
+</nav>
+
+<main>
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="q" placeholder="Search questions and answers…" oninput="filter()" />
+  </div>
+
+  <!-- INVENTORY -->
+  <div class="section-label" id="inventory"><span>Inventory</span></div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">Is there a way to organize items by ordering history to identify deadstock?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>The best tool for this is the <strong>Unused / Excess Inventory Report</strong>, under Reports in BevSpot. It's specifically designed to surface deadstock and slow-moving items.</p>
+      <p>Purchase records alone won't reliably show movement rates — they only capture what was ordered, not what was consumed. The report accounts for actual COGS and gives a much more accurate picture of product velocity.</p>
+      <div class="tip"><strong>Pro tip:</strong> Book a call with your CSM to configure the report thresholds for your specific location's volume and seasonal patterns.</div>
+      <span class="src">Ryan Puckett, Sheraton Grand Nashville · Apr 2026</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">We accidentally closed inventory to the wrong date and reopened it — now numbers are off. What do we do?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>Contact your Customer Success Manager immediately by phone or email. The CSM team will investigate the posting discrepancy and correct it on your behalf, and use it as a training opportunity with the invoice processing team.</p>
+      <div class="tip"><strong>Important:</strong> Do not run another inventory count before the issue is resolved — this can compound the discrepancy further.</div>
+      <span class="src">Michael Fletcher, Sheraton Imperial Hotel · Apr 2026</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">Can unassigned items from an old separated account be transferred to our new consolidated account automatically?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>This is possible but time-intensive. BevSpot can run a comparison across old and new accounts and conduct an additional onboarding pass — going line by line to avoid duplicates.</p>
+      <p>In the short term, all items must be <strong>manually assigned to a storage area</strong> before counting. Schedule this type of work outside of month-end when the team has more capacity.</p>
+      <div class="tip"><strong>Note:</strong> Items must always be assigned to a storage area before they can appear in a count.</div>
+      <span class="src">Diego Heredia, Westin Atlanta Gwinnett · Apr 2026</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">How do I transfer inventory to another department or BevSpot account (e.g., Banquets)?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>Use the <strong>Record Transfer</strong> tool in the top right of the Inventory History page. Select the destination account, choose the product, enter the quantity, and confirm the transfer date.</p>
+      <p>If the destination account doesn't appear in the dropdown, contact your CSM — they may need to grant you access to that account and enable transfer permissions first.</p>
+      <span class="src">Henry Devenny, Boilerhouse Prime · Dec 2025</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">Can I export my finalized inventory count from BevSpot?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>Yes — go to the <strong>Count Summary</strong> page on any finalized count to run an export. Your CSM can also pull and send the export on your behalf if needed.</p>
+      <span class="src">Ray Fernandez, Marriott · Apr 2026</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">A storage area was deleted from our account and items are no longer showing correctly. Who can fix this?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>Your CSM can investigate who deleted it and when, then recreate the storage area on your behalf. Items that were assigned to the deleted area may need to be reassigned — your CSM can handle this or walk you through it.</p>
+      <span class="src">Manuel Gonzalez, AC Sunrise Sawgrass · Apr 2026</span>
+    </div></div>
+  </div>
+
+  <!-- INVOICING -->
+  <div class="section-label" id="invoicing"><span>Invoicing</span></div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">Will inventory pricing update in real time when we submit invoices? Do Sysco and other vendors like Halperns both integrate automatically?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>Yes — item pricing updates automatically each time an invoice is received and processed. Make sure all invoices are routed to the correct account.</p>
+      <p><strong>Only Sysco invoices are imported automatically</strong> via the integration. All other vendors — including Halperns — must be submitted manually by either:</p>
+      <ul>
+        <li>Uploading via the <strong>Process Invoices</strong> tool on the Order History page</li>
+        <li>Emailing invoices as attachments to your location-specific BevSpot invoice address</li>
+      </ul>
+      <p>You can track Sysco invoice progress on the Order History page.</p>
+      <span class="src">Mariela Biggio, Westin Atlanta Gwinnett · Apr 2026</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">I accidentally uploaded beverage invoices into the food account. How do I fix it?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>Use the <strong>Invoice Reassignment Tool</strong> in BevSpot to move invoices to the correct account — it only takes a few clicks. If you're unsure how, provide your CSM with the invoice numbers and they'll handle it for you.</p>
+      <div class="tip"><strong>Remember:</strong> Beverage invoices in the food account must be reassigned and then deleted from food orders to keep your COGS accurate.</div>
+      <span class="src">Judy Carlisle, Westin Atlanta Gwinnett · Apr 2026</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">Why are invoices taking close to a week to process? It used to be just a few days.</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>BevSpot's standard target is a <strong>24-hour turnaround</strong> on invoice processing. At month-end, this can stretch to up to <strong>54 hours</strong> due to high submission volume across all accounts simultaneously.</p>
+      <p>If invoices are consistently taking 5–7 days, flag it to your CSM — they'll investigate with the Invoice Processing team and identify any specific overdue items. No changes are needed on your end.</p>
+      <span class="src">Jeff Brohman, Orchard Group · Dec 2025</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">Some Sysco invoice pages are being uploaded and then deleted. Why is this happening?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>Pages that are incomplete or unreadable are deleted after processing begins. This is typically because the upload is a partial scan, a packing slip, or an order record rather than a full invoice.</p>
+      <p>BevSpot can only process complete invoices with pricing data. Packing slips and order confirmations are not accepted. Your CSM will investigate and flag specific instances with the processing team.</p>
+      <div class="tip"><strong>Note:</strong> Always upload complete, multi-page invoice PDFs rather than individual partial scans.</div>
+      <span class="src">Jeff Brohman / Kim Doucet, Orchard Group · Dec 2025</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">The Fintech integration went live but no invoices are showing up in BevSpot. What's going on?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>The Fintech integration only pushes invoices when they are <strong>paid</strong> in Fintech — not when they are received or submitted. If no invoices have been paid since the integration went live, nothing will appear in BevSpot yet.</p>
+      <p>Also note: one Fintech account can only connect to one BevSpot account. If you have multiple revenue centers, your CSM will need to configure the structure accordingly.</p>
+      <span class="src">Kevin McAteer, OTO Development · Apr 2026</span>
+    </div></div>
+  </div>
+
+  <!-- ORDERING -->
+  <div class="section-label" id="ordering"><span>Ordering &amp; Par Levels</span></div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">Can BevSpot replace our spreadsheet for order guides and par levels?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>Yes. The <strong>Cart Builder</strong> in BevSpot shows average weekly usage per item, calculated from your last 90 days of COGS data — this is the best number to order against. The 90-day lookback period can be adjusted in account settings.</p>
+      <p>The accuracy of this figure depends entirely on keeping your COGS up to date — meaning inventory counts, invoices, and transfers must all be current.</p>
+      <p>BevSpot also supports placing orders directly through the platform (via email or text to reps). Book a call with your CSM to configure ordering.</p>
+      <span class="src">Ashlee Colborn, Pine Canyon · Dec 2025</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">How does average weekly usage work if we only do inventory counts monthly?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>Weekly usage is calculated from all COGS data in the last 90 days, regardless of how frequently you count. The system divides total consumption across the number of weeks in the lookback period.</p>
+      <p>For example: 56 units consumed over 8 weeks between two monthly counts = ~7 units per week average. Treat the number as a useful estimate — not gospel — and adjust for known seasonal swings.</p>
+      <span class="src">Ashlee Colborn, Pine Canyon · Dec 2025</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">A sales item (like a banquet package) isn't showing up in our BevSpot variance report. Why?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>The item likely hasn't been <strong>mapped</strong> yet. Items — including package types — must be mapped in BevSpot before they appear in sales and variance calculations. Un-mapped items are excluded entirely.</p>
+      <p>Once mapped, the item will appear in future reports automatically — no need to rerun historical reports. Contact your CSM for help with mapping.</p>
+      <span class="src">Luis Garza, White Lodging · Apr 2026</span>
+    </div></div>
+  </div>
+
+  <!-- ONBOARDING -->
+  <div class="section-label" id="onboarding"><span>Onboarding</span></div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">We've set up a new company and need a new BevSpot Pro-Food plan. What steps do we take?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>Contact your CSM with: the location's full name and address, your preferred onboarding method, and your anticipated opening or first inventory date.</p>
+      <p>For onboarding your item list, you have two options:</p>
+      <ul>
+        <li><strong>Option 1:</strong> Import existing items from another BevSpot account you already manage</li>
+        <li><strong>Option 2:</strong> Onboard fresh using a purchase list and/or opening purchase invoices</li>
+      </ul>
+      <span class="src">Bonnie Hannum, Oldham Hospitality · Apr 2026</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">Can one property have multiple BevSpot accounts for different outlets under a single subscription?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>Yes — you can have multiple accounts for individual revenue centers (bar, restaurant, banquets, retail, etc.) all under a single property subscription. Each account tracks its own inventory and COGS independently.</p>
+      <p>Your CSM can set up additional accounts and configure shared vendor lists and item libraries where applicable.</p>
+      <span class="src">MaryAnn Salerno, Tribute Restaurant · Dec 2025</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">After switching to a consolidated food account, where do invoices now go?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>All invoices should be directed to the <strong>new consolidated food account</strong>. Here's how by vendor type:</p>
+      <ul>
+        <li><strong>Sysco:</strong> Automatically redirected via integration — no action needed</li>
+        <li><strong>All other vendors:</strong> Forward invoice emails to your location-specific BevSpot invoice address, or upload via the Process Invoices tool</li>
+      </ul>
+      <div class="tip"><strong>Reminder:</strong> Invoices sent to old or inactive accounts will not appear in your current inventory. Ask your CSM for your invoice email address if you're unsure.</div>
+      <span class="src">Westin Atlanta Gwinnett · Apr 2026</span>
+    </div></div>
+  </div>
+
+  <!-- REPORTING -->
+  <div class="section-label" id="reporting"><span>Reporting</span></div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">Can we get the monthly compliance report earlier than usual? I need it before Monday for a Q1 presentation.</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>The monthly compliance report runs on the <strong>10th of each month</strong> — this timing ensures all inventory counts and invoices have been submitted before the report is generated.</p>
+      <p>If you regularly need it earlier, let your CSM know and they can look at adjusting the run date. For one-off urgent needs, reaching out to your CSM early in the month gives the best chance of getting a preliminary pull.</p>
+      <span class="src">Zach Wendel, Concord Hospitality · Apr 2026</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">How do I audit my COGS through the variance report to identify anomalies?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>Review the <strong>Sold (units)</strong> and <strong>Usage (units)</strong> columns for each item. Look for products where these figures are unusually high or low compared to what you'd expect based on your sales mix — that's typically where anomalies live.</p>
+      <p>Common causes include unmapped items, incorrect portion sizes in recipes, or invoices not yet processed. Your CSM can walk through the report with you to isolate the source of any significant discrepancy.</p>
+      <div class="tip"><strong>Tip:</strong> Book a variance review call with your CSM at the start of each month for proactive COGS management.</div>
+      <span class="src">Shannon Gilmore, White Lodging · Apr 2026</span>
+    </div></div>
+  </div>
+
+  <!-- ACCESS -->
+  <div class="section-label" id="access"><span>Access &amp; Users</span></div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">How do I add or remove user access to BevSpot? Can permissions be scoped to specific accounts?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>User access is managed by your CSM or by Group Admins within your organization. New users receive an email invitation to create their BevSpot profile. Access can be scoped to specific accounts (beverage, food, retail, etc.) and permission levels (view-only, admin, etc.).</p>
+      <p>To remove users, contact your CSM with the name(s) of the individuals. Removing Group Admin access requires the CSM's engineering team. Group-level permissions can be reviewed via the <strong>Group Dashboard</strong> in BevSpot.</p>
+      <span class="src">Lynsie Gonsalves, Westmoreland CC · Apr 2026</span>
+    </div></div>
+  </div>
+
+  <div class="qa" onclick="tog(this)">
+    <div class="qa-head"><div class="q-badge">Q</div>
+    <p class="q-text">Can I see when a user was invited to BevSpot, or check if a specific user profile exists?</p>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    <div class="qa-body"><div class="ans">
+      <p>BevSpot does not currently display a timestamp for when a user was invited. However, your CSM can look up any profile by name or email to confirm whether the account exists and what permissions have been assigned.</p>
+      <p>If a user was invited as a non-admin, they can view and submit counts but cannot approve orders or edit account settings. Provide your CSM with the user's name or email for a quick lookup.</p>
+      <span class="src">Patrick Hendricks, Heritage · Dec 2025</span>
+    </div></div>
+  </div>
+
+</main>
+
+<footer>
+  <strong>BevSpot</strong> · Customer Q&amp;A Knowledge Base · Sam Wilson, Senior Enterprise Customer Success Manager · Jan 2025 – Apr 2026
+</footer>
+
+<script>
+  function tog(el) { el.classList.toggle('open'); }
+  function filter() {
+    const q = document.getElementById('q').value.toLowerCase();
+    document.querySelectorAll('.qa').forEach(c => {
+      c.classList.toggle('hidden', q.length > 1 && !c.textContent.toLowerCase().includes(q));
+    });
+  }
+</script>
+</body>
+</html>
