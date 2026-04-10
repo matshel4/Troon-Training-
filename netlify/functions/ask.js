@@ -263,7 +263,7 @@ async function askQuestion() {
     const data = await response.json();
     if (data.error) throw new Error(data.error);
 
-    const answer = data.answer;
+    const answer = data.answer || 'No answer was returned. Please try again.';
     const sources = [];
     const lower = answer.toLowerCase();
     if (lower.includes('inventory') || lower.includes('cogs') || lower.includes('usage') || lower.includes('flag') || lower.includes('categoriz')) sources.push('Inventory & COGS Auditing Guide');
