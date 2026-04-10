@@ -38,9 +38,16 @@
   .search-section { padding: 24px 0 16px; position: sticky; top: 0; z-index: 100; background: var(--bg); }
   .search-section::after { content: ''; position: absolute; bottom: -16px; left: 0; right: 0; height: 16px; background: linear-gradient(var(--bg), transparent); pointer-events: none; }
   .search-box { position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border-radius: var(--radius); }
-  .search-box textarea { width: 100%; padding: 18px 60px 18px 22px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px; line-height: 1.5; resize: none; outline: none; transition: border-color 0.25s, box-shadow 0.25s; overflow: hidden; min-height: 58px; max-height: 160px; }
+  .search-box textarea { width: 100%; padding: 18px 104px 18px 22px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px; line-height: 1.5; resize: none; outline: none; transition: border-color 0.25s, box-shadow 0.25s; overflow: hidden; min-height: 58px; max-height: 160px; }
   .search-box textarea::placeholder { color: var(--text-muted); }
   .search-box textarea:focus { border-color: var(--bevspot-blue); box-shadow: 0 0 0 4px var(--bevspot-blue-glow), 0 4px 20px rgba(0,0,0,0.06); }
+
+  .mic-btn { position: absolute; right: 56px; bottom: 10px; width: 40px; height: 40px; border: none; border-radius: 10px; background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .mic-btn:hover { color: var(--bevspot-blue); background: var(--bevspot-blue-glow); }
+  .mic-btn.listening { color: #fff; background: var(--red); animation: micPulse 1.5s infinite; }
+  @keyframes micPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.3); } 50% { box-shadow: 0 0 0 8px rgba(220,38,38,0); } }
+  .mic-btn svg { width: 20px; height: 20px; }
+
   .search-btn { position: absolute; right: 10px; bottom: 10px; width: 40px; height: 40px; border: none; border-radius: 10px; background: var(--bevspot-blue); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.15s, background 0.15s; }
   .search-btn:hover { transform: scale(1.06); background: var(--bevspot-blue-light); }
   .search-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
@@ -109,6 +116,9 @@
   <div class="search-section">
     <div class="search-box">
       <textarea id="questionInput" rows="1" placeholder="e.g. How do I fix a $0 cost item in my inventory?"></textarea>
+      <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Speak your question">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
       <button class="search-btn" id="askBtn" onclick="askQuestion()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
@@ -161,20 +171,72 @@
 </div>
 
 <script>
-const textarea = document.getElementById('questionInput');
-const askBtn = document.getElementById('askBtn');
+var textarea = document.getElementById('questionInput');
+var askBtn = document.getElementById('askBtn');
+var micBtn = document.getElementById('micBtn');
+var recognition = null;
+var isListening = false;
 
-textarea.addEventListener('input', () => {
+// Speech Recognition Setup
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+
+  recognition.onresult = function(event) {
+    var transcript = '';
+    for (var i = 0; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+    }
+    textarea.value = transcript;
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
+    if (event.results[0].isFinal) {
+      stopMic();
+      askQuestion();
+    }
+  };
+
+  recognition.onerror = function() { stopMic(); };
+  recognition.onend = function() { stopMic(); };
+} else {
+  micBtn.style.display = 'none';
+}
+
+function toggleMic() {
+  if (isListening) { stopMic(); } else { startMic(); }
+}
+
+function startMic() {
+  if (!recognition) return;
+  isListening = true;
+  micBtn.classList.add('listening');
+  textarea.placeholder = 'Listening...';
+  textarea.value = '';
+  recognition.start();
+}
+
+function stopMic() {
+  if (!recognition) return;
+  isListening = false;
+  micBtn.classList.remove('listening');
+  textarea.placeholder = 'e.g. How do I fix a $0 cost item in my inventory?';
+  try { recognition.stop(); } catch(e) {}
+}
+
+textarea.addEventListener('input', function() {
   textarea.style.height = 'auto';
   textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
 });
 
-textarea.addEventListener('keydown', (e) => {
+textarea.addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); askQuestion(); }
 });
 
 function fillQuestion(el) {
-  const q = el.dataset?.q || el.textContent;
+  var q = el.getAttribute('data-q') || el.textContent;
   textarea.value = q;
   textarea.style.height = 'auto';
   textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
@@ -182,31 +244,34 @@ function fillQuestion(el) {
 }
 
 async function askQuestion() {
-  const question = textarea.value.trim();
+  var question = textarea.value.trim();
   if (!question) return;
 
   askBtn.disabled = true;
-  const section = document.getElementById('answerSection');
-  const grid = document.getElementById('topicsGrid');
+  var section = document.getElementById('answerSection');
+  var grid = document.getElementById('topicsGrid');
   if (grid) grid.style.display = 'none';
 
   section.innerHTML = '<div class="answer-card"><div class="answer-header"><span class="dot"></span> Finding your answer</div><div class="loading"><div class="loading-dots"><span></span><span></span><span></span></div>Searching the BevSpot guides...</div></div>';
 
   try {
-    const response = await fetch('/.netlify/functions/ask', {
+    var response = await fetch('/.netlify/functions/ask', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question })
+      body: JSON.stringify({ question: question })
     });
-    const data = await response.json();
+    var data = await response.json();
     if (data.error) throw new Error(data.error);
 
-    const answer = data.answer;
-    const sources = [];
-    const lower = answer.toLowerCase();
-    if (lower.includes('inventory') || lower.includes('cogs') || lower.includes('usage') || lower.includes('flag') || lower.includes('categoriz')) sources.push('Inventory & COGS Auditing Guide');
-    if (lower.includes('variance') || lower.includes('mapping') || lower.includes('profit') || lower.includes('pos') || lower.includes('sales')) sources.push('Sales Variance Analysis Guide');
-    const sourceTags = sources.map(s => '<span class="source-tag">📄 ' + s + '</span>').join(' ');
+    var answer = data.answer || 'No answer was returned. Please try again.';
+    var sources = [];
+    var lower = answer.toLowerCase();
+    if (lower.indexOf('inventory') !== -1 || lower.indexOf('cogs') !== -1 || lower.indexOf('usage') !== -1 || lower.indexOf('flag') !== -1 || lower.indexOf('categoriz') !== -1) sources.push('Inventory & COGS Auditing Guide');
+    if (lower.indexOf('variance') !== -1 || lower.indexOf('mapping') !== -1 || lower.indexOf('profit') !== -1 || lower.indexOf('pos') !== -1 || lower.indexOf('sales') !== -1) sources.push('Sales Variance Analysis Guide');
+    var sourceTags = '';
+    for (var i = 0; i < sources.length; i++) {
+      sourceTags += '<span class="source-tag">📄 ' + sources[i] + '</span> ';
+    }
 
     section.innerHTML = '<div class="answer-card"><div class="answer-header"><span class="dot"></span> Answer</div><div class="answer-body">' + answer + (sourceTags ? '<div style="margin-top:18px">' + sourceTags + '</div>' : '') + '</div></div>';
   } catch (err) {
